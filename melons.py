@@ -1,5 +1,8 @@
 """Classes for melon orders."""
 
+from random import randint
+import time
+from datetime import date
 
 class AbstractMelonOrder(object):
     """An abstract base class that other Melon Orders inherit from."""
@@ -10,14 +13,27 @@ class AbstractMelonOrder(object):
         self.qty = qty
         self.country_code = country_code
         self.shipped = False
-        
+    
+
+    def get_base_price(self):
+        """Creates a random base price between 5-9 for Splurge Pricing."""
+
+        base_price = randint(5, 9)
+        day = date.today.weekday()
+
+        if day in range(0,5):
+            base_price += 4 
+
+        if self.species == "christmas melons":
+            base_price *= 1.5
+
+        return base_price    
 
     def get_total(self):
         """Calculate price, including tax."""
 
-        base_price = 5
-        if self.species == "christmas melons":
-            base_price *= 1.5
+        base_price = self.get_base_price()
+        
 
         total = (1 + self.tax) * self.qty * base_price
 
@@ -56,6 +72,7 @@ class GovernmentMelonOrder(DomesticMelonOrder):
     tax = 0.0
     passed_inspection = False
 
-    def mark_inspection(self, passed):
-        if passed:
+    def mark_inspection(self, bool):
+        """Takes a boolean and upodates whether melon has passed inspection."""
+        if bool == True:
             self.passed_inspection = True
